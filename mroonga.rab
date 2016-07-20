@@ -1,0 +1,292 @@
+= Mroonga\n2016
+
+: subtitle
+   高速日本語全文検索 for MariaDB\n
+   (('note:Super fast full text search for MariaDB'))
+: author
+   Kouhei Sutou
+: institution
+   ClearCode Inc.
+: content-source
+   MariaDB Community Event in Tokyo
+: date
+   2016-07-21
+: allotted-time
+   30m
+: theme
+   .
+
+= Mroonga
+
+  * 読み方：むるんが\n
+    (('note:Pronunciation: múlúnɡά'))
+  * ストレージエンジン\n
+    (('note:Storage engine'))
+  * (('wait'))MariaDBバンドル\n
+    (('note:Bundled in MariaDB'))
+    * 別途インストールしなくてもよい\n
+      (('note:No need to install Mroonga separately'))
+
+= 特徴\n(('note:Features'))
+
+  * (('wait'))
+    高速日本語全文検索(('note:（全言語OK）'))\n
+    (('note:Super fast full text search for all languages'))
+  * (('wait'))
+    カラムストアによる高速処理\n
+    (('note:Super fast processing by column store architecture'))
+  * (('wait'))
+    全文検索初心者でも使える\n
+    (('note:Easy to use by non full text search specialists'))
+
+= 高速日本語全文検索\n(('note:Super fast full text search'))
+
+  (1) ベンチマーク\n
+      (('note:Benchmark'))
+  (2) 速さの秘密\n
+      (('note:The reason why Mroonga is fast'))
+
+= ベンチマーク環境\n(('note:Benchmark environment'))
+
+  * 対象：Wikipedia日本語版\n
+    (('note:Target: Japanese version Wikipedia'))
+  * レコード数：約185万件\n
+    (('note:The number of records: About 1.85 millions'))
+  * データサイズ：約7GB\n
+    (('note:Data size: About 7GB'))
+  * メモリー4GB・SSD250GB(('note:（ConoHa）'))\n
+    (('note:Memory: 4GB, SSD: 250GB'))
+
+= 補足\n(('note:Supplement'))
+
+  * MySQL 5.7を使用\n
+    (('note:MySQL 5.7 is used'))
+    * MariaDBのInnoDBは日本語未対応\n
+      (('note:InnoDB in MariaDB doesn't support Japanese yet'))
+  * 他人のベンチマークは参考程度\n
+    (('note:Just refer benchmark result by others'))
+    * 検討時は実環境でベンチマークを！\n
+      (('note:Run benchmark with the real data on real env'))
+
+(('note:詳細(Detail)：'))\n
+(('note:https://github.com/groonga/wikipedia-search/issues/4'))
+
+= 検索1\n(('note:Search1'))
+
+(('tag:center'))
+キーワード：テレビアニメ\n
+(('note:（ヒット数：約2万3千件）'))\n
+(('note:Keyword: TV animation'))\n
+(('note:(N hits: About 23K)'))
+
+  # RT
+  delimiter = [|]
+
+  InnoDB ngram | 3m2s
+  InnoDB MeCab | 6m20s
+  Mroonga:((*1*)) | 0.11s
+
+= 検索2\n(('note:Search2'))
+
+(('tag:center'))
+キーワード：データベース\n
+(('note:（ヒット数：約1万7千件）'))\n
+(('note:Keyword: Database'))\n
+(('note:(N hits: About 17K)'))
+
+  # RT
+  delimiter = [|]
+
+  InnoDB ngram | 36s
+  InnoDB MeCab:((*1*)) | 0.03s
+  Mroonga:((*2*)) | 0.09s
+
+= 検索3\n(('note:Search3'))
+
+(('tag:center'))
+キーワード：PostgreSQL OR MySQL\n
+(('note:（ヒット数：約400件）'))\n
+(('note:Keyword: PostgreSQL OR MySQL'))\n
+(('note:(N hits: About 400)'))
+
+  # RT
+  delimiter = [|]
+
+  InnoDB ngram | N/A(Error)
+  InnoDB MeCab:((*1*)) | 0.005s
+  Mroonga:((*2*)) | 0.028s
+
+= 検索4\n(('note:Search4'))
+
+(('tag:center'))
+キーワード：日本\n
+(('note:（ヒット数：約63万件）'))\n
+(('note:Keyword: Japan'))\n
+(('note:(N hits: About 630K)'))
+
+  # RT
+  delimiter = [|]
+
+  InnoDB ngram | 1.3s
+  InnoDB MeCab | 1.3s
+  Mroonga:((*1*)) | 0.21s
+
+= 検索まとめ\n(('note:Wrap up search'))
+
+  * (('wait'))Mroonga：安定して速い\n
+    (('note:Always fast'))
+  * (('wait'))InnoDB FTS MeCab
+    * ハマれば速い\n
+      (('note:Fast only for one token query'))
+  * (('wait'))InnoDB FTS ngram
+    * 安定して遅い\n
+      (('note:Always slow'))
+
+= 速さの秘密\n(('note:The reason why Mroonga is fast'))
+
+  * 最適化された転置索引実装\n
+    (('note:Optimized inverted index implementation'))
+    * (('wait'))2段階のデータ圧縮\n
+      (('note:2 level data compression'))
+    * (('wait'))高速なポスティングリスト探索\n
+      (('note:Fast posting list search'))
+    * (('wait'))検索だけでなく更新も速い\n
+      (('note:Not only search but also update is fast'))
+
+(('wait'))
+(('note:11年以上開発が続いている全文検索エンジンGroongaを使用'))\n
+(('note:Groonga full text search engine (11 years old) is used'))
+
+= もっと速さの秘密\n(('note:More reasons why Mroonga is fast'))
+
+  * カラムストアを活かした最適化\n
+    (('note:Optimizations based on column store architecture'))
+    * ポイント1：余計なI/Oを減らす\n
+      (('note:Point1: Reduce needless I/O'))
+    * ポイント2：I/Oを局所化\n
+      (('note:Point2: Localize I/O'))
+
+= カラムストア\n(('note:Column store'))
+
+  # image
+  # src = images/column-store.svg
+  # relative_height = 100
+
+= 必要なカラムのみアクセス\n(('note:Access to only needed columns'))
+
+  # coderay sql
+  -- Access to only a
+  SELECT a
+    FROM table
+  -- Access to only c
+   WHERE c = XXX;
+  -- b isn't accessed
+
+= 減ったI/O\n(('note:Reduced I/O'))
+
+  # image
+  # src = images/not-access-to-needless-columns.svg
+  # relative_height = 100
+
+= 行カウント\n(('note:Row count'))
+
+  # coderay sql
+  -- No column values are needed
+  SELECT COUNT(*)
+    FROM table
+  -- Access to only full text search index of c
+   WHERE MATCH(c)
+       AGAINST('+keyword' IN BOOLEAN MODE);
+  -- a, b and c aren't accessed
+
+= 減ったI/O\n(('note:Reduced I/O'))
+
+  # image
+  # src = images/count-star.svg
+  # relative_height = 100
+
+= (({ORDER BY LIMIT}))
+
+  # coderay sql
+  SELECT *
+    FROM table
+   WHERE MATCH(c)
+       AGAINST('+keyword' IN BOOLEAN MODE)
+  -- Mroonga processes ORDER BY LIMIT
+  -- instead of MariaDB
+  -- → Mroonga returns only 10 records
+  --    to MariaDB instead of all matched records
+   ORDER BY a LIMIT 10;
+
+= Optimized (({ORDER BY LIMIT}))
+
+  * (('wait'))検索(('note:(Search)')) by Mroonga
+    * カラム毎の処理でI/Oを局所化\n
+      (('note:（索引非使用時）'))\n
+      (('note:Localize I/O by per column processing'))\n
+      (('note:(on no index case)'))
+  * (('wait'))ソート(('note:(Sort)')) by Mroonga
+    * カラム毎の処理でI/Oを局所化\n
+      (('note:Localize I/O by per column processing'))
+  * (('wait'))(({OFFSET}))/(({LIMIT})) by Mroonga
+
+= カラム毎の処理は速い\n(('note:Per column processing is fast'))
+
+  # image
+  # src = images/per-column-processing.svg
+  # relative_height = 100
+
+= 最適化のまとめ\n(('note:Wrap up optimization'))
+
+  * 転置索引実装が速い\n
+    (('note:Inverted index implementation is fast'))
+    * 検索も更新も速い\n
+      (('note:Both search and update are fast'))
+  * カラムストアで速い\n
+    (('note:Fast by column store architecture'))
+    * ポイント：I/O削減・I/O局所化\n
+      (('note:Points: Reduce and localize I/O'))
+
+= 全文検索初心者でも使える\n(('note:Easy to use by beginners'))
+
+  * (('wait'))インストールが簡単\n
+    (('note:Easy to install'))
+  * (('wait'))MySQLの標準機能のみで使える\n
+    (('note:Usable only with MySQL standard features'))
+
+= インストールが簡単\n(('note:Easy to install'))
+
+  * (('wait'))MariaDBバンドル\n
+    (('note:MariaDB bundled'))
+  * (('wait'))Apt/Yumリポジトリー\n
+    (('note:Apt/Yum repositories'))
+  * (('wait'))MariaDB込みのWindowsバイナリ\n
+    (('note:Windows binary with MariaDB'))
+
+= 標準機能のみで使える\n(('note:Require only MySQL standard features'))
+
+  # coderay sql
+  -- Create
+  CREATE TABLE table (
+    -- ...,
+    FULLTEXT INDEX (column)
+  ) ENGINE=Mroonga;
+
+= 標準機能のみで使える\n(('note:Require only MySQL standard features'))
+
+  # coderay sql
+  -- Convert
+  ALTER TABLE table
+    ADD FULLTEXT INDEX (column)
+    ENGINE=Mroonga;
+
+= 標準機能のみで使える\n(('note:Require only MySQL standard features'))
+
+  # coderay sql
+  SELECT * FROM table
+    WHERE
+      MATCH(column)
+      AGAINST('+keyword'
+              IN BOOLEAN MODE);
+
+= ...
