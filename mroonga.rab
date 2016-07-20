@@ -40,7 +40,7 @@
     (('note:Easy to use by full text search beginners'))
   * (('wait'))
     全文検索上級者は活用できる\n
-    (('note:There are features for full text search specialists'))
+    (('note:Features for full text search specialists'))
 
 = 高速日本語全文検索\n(('note:Super fast full text search'))
 
@@ -260,7 +260,7 @@
 = インストールが簡単\n(('note:Easy to install'))
 
   * (('wait'))MariaDBバンドル\n
-    (('note:MariaDB bundled'))
+    (('note:MariaDB bundles Mroonga'))
   * (('wait'))Apt/Yumリポジトリー\n
     (('note:Apt/Yum repositories'))
   * (('wait'))MariaDB込みのWindowsバイナリ\n
@@ -300,11 +300,11 @@
     * デフォルト値はいい感じ\n
       →初心者はカスタマイズなしでよい\n
       (('note:Suitable default values'))\n
-      (('note:→Beginners doesn't need to customize'))
+      (('note:→Beginners don't need to customize'))
   * (('wait'))
     Groongaの機能をもっと使える\n
     (('note:（高速・高機能）'))\n
-    (('note:Can use more Groonga features'))\n
+    (('note:Specialists can use more Groonga features'))\n
     (('note:(Fast and high functionality)'))
 
 = 文字正規化ルール変更\n(('note:Change normalizer'))
@@ -334,7 +334,7 @@
   # coderay sql
   SELECT * FROM table
     WHERE
-      -- "c1" is meaningless
+      -- "c1" is meaningless with "*SS" pragma
       MATCH(c1)
       -- "*SS" is a pragma to use
       -- full Groonga search features
@@ -380,7 +380,7 @@
     (('note:Easy to use by full text search beginners'))
   * (('wait'))
     全文検索上級者は活用できる\n
-    (('note:There are features for full text search specialists'))
+    (('note:Features for full text search specialists'))
 
 = まとめ2\n(('note:Wrap up2'))
 
